@@ -1,0 +1,39 @@
+version: "3.8"
+
+networks:
+  bbp-network:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: "../backend"
+    image: "bbp-backend"
+    container_name: "bbp-backend"
+    env_file:
+      - ../backend/.env
+    restart: always
+    networks:
+      - bbp-network
+  frontend:
+    build:
+      context: "../frontend"
+    image: "bbp-frontend"
+    container_name: "bbp-frontend"
+    restart: always
+    networks:
+      - bbp-network
+  nginx:
+    build:
+      context: .
+    image: "bbp-nginx"
+    container_name: "bbp-nginx"
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    networks:
+      - bbp-network
+    depends_on:
+      - "frontend"
+      - "backend"
